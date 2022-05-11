@@ -25,7 +25,10 @@ import androidx.compose.ui.unit.sp
 import com.example.composeui.R
 import com.example.composeui.model.SampleData
 import com.example.composeui.ui.theme.Purple500
+import com.example.composeui.util.Constants.CollapseAnimation
 import com.example.composeui.util.Constants.ExpandAnimation
+import com.example.composeui.util.Constants.FadeInAnimation
+import com.example.composeui.util.Constants.FadeOutAnimation
 import com.example.composeui.viewmodel.ExpandableViewModel
 
 @ExperimentalAnimationApi
@@ -35,13 +38,32 @@ fun ExpandableScreen(viewModel: ExpandableViewModel) {
     val expandedCard = viewModel.expandedCardList.collectAsState()
 
     Scaffold {
-        LazyColumn {
-            itemsIndexed(cards.value) { _, card ->
-                ExpandableCard(
-                    card = card,
-                    onCardArrowClick = { viewModel.onCardArrowClick(card.id) },
-                    expanded = expandedCard.value.contains(card.id)
+        Column(
+            modifier = Modifier.fillMaxSize()
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(Purple500)
+                    .height(50.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
+            ) {
+                Text(
+                    text = "Expanded Lists",
+                    color = Color.White,
+                    fontSize = 20.sp,
+                    fontWeight = FontWeight.Bold
                 )
+            }
+            LazyColumn {
+                itemsIndexed(cards.value) { _, card ->
+                    ExpandableCard(
+                        card = card,
+                        onCardArrowClick = { viewModel.onCardArrowClick(card.id) },
+                        expanded = expandedCard.value.contains(card.id)
+                    )
+                }
             }
         }
     }
@@ -108,7 +130,7 @@ fun ExpandableCard(
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Column(
-                        modifier = Modifier.fillMaxWidth(0.85f)
+                        modifier = Modifier.weight(0.85f)
                     ) {
                         Text(
                             text = card.title,
@@ -120,7 +142,7 @@ fun ExpandableCard(
                         )
                     }
                     Column(
-                        modifier = Modifier.fillMaxWidth(0.15f)
+                        modifier = Modifier.weight(0.15f)
                     ) {
                         IconButton(onClick = {
                             onCardArrowClick()
@@ -133,7 +155,53 @@ fun ExpandableCard(
                         }
                     }
                 }
+                ExpandableContent(expanded)
             }
+        }
+    }
+}
+
+@Composable
+fun ExpandableContent(expanded: Boolean) {
+    val enterFadeIn = remember {
+        fadeIn(
+            animationSpec = TweenSpec(
+                durationMillis = FadeInAnimation,
+                easing = FastOutLinearInEasing
+            )
+        )
+    }
+    val exitFadeOut = remember {
+        fadeOut(
+            animationSpec = TweenSpec(
+                durationMillis = FadeOutAnimation,
+                easing = LinearOutSlowInEasing
+            )
+        )
+    }
+    val exitCollapse = remember {
+        shrinkVertically(animationSpec = tween(CollapseAnimation))
+    }
+    val enterExpand = remember {
+        expandVertically(animationSpec = tween(ExpandAnimation))
+    }
+    AnimatedVisibility(
+        visible = expanded,
+        enter = enterExpand + enterFadeIn,
+        exit = exitCollapse + exitFadeOut
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(Color.White)
+                .padding(8.dp)
+        ) {
+            Text(
+                text = "Jetpack Compose for Android",
+                textAlign = TextAlign.Center,
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier.fillMaxWidth()
+            )
         }
     }
 }

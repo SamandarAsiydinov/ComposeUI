@@ -13,6 +13,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import com.example.composeui.expand.ExpandableScreen
+import com.example.composeui.spin_calendar.SpinnerView
 import com.example.composeui.ui.theme.ComposeUITheme
 import com.example.composeui.viewmodel.ExpandableViewModel
 
@@ -25,7 +26,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             ComposeUITheme {
-                ExpandableScreen(viewModel)
+                SpinnerView()
             }
         }
     }
